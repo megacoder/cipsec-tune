@@ -1,0 +1,5 @@
+#!/bin/zsh
+CFACE=cipsec0
+IFACE=eth0
+xtitle -q "${CFACE} watch"
+exec /usr/bin/watch -n3 -d "/sbin/ifconfig ${IFACE};/sbin/ifconfig ${CFACE}"

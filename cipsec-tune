@@ -1,0 +1,32 @@
+#!/bin/zsh
+ME=$(basename $0)
+USAGE="usage: ${ME} [-m mtu] [-q len]"
+#
+# This is for satellite
+MTU=1216
+# Make the outbound queue pretty long
+TXQ=4096
+#
+while getopts m:q: c
+do
+	case "${c}" in
+	m)	MTU="${OPTARG}";;
+	q)	TXQ="${OPTARG}";;
+	esac
+done
+shift $(expr ${OPTIND} - 1)
+#
+echo "mtu = ${MTU}"
+sudo /sbin/ifconfig cipsec0 mtu ${MTU}
+#
+echo "txq = ${TXQ}"
+sudo /sbin/ifconfig cipsec0 txqueuelen ${TXQ}
+sudo /sbin/ifconfig eth0 txqueuelen ${TXQ}
+sudo /sbin/sysctl -w							\
+	'net.ipv4.ipfrag_time=60'					\
+	'net.ipv4.tcp_rmem=16536 32768 4194304'
+# Not needed if "/etc/dhclient.conf" has the line:
+#     prepend domain-name-servers 127.0.0.1;
+sudo cp /etc/resolv.conf-vpn /etc/resolv.conf
+#sudo /sbin/service named condrestart
+sudo /sbin/service dnsmasq condrestart

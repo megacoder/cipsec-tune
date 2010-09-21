@@ -1,0 +1,5 @@
+domain oracle.com
+nameserver 127.0.0.1
+nameserver 146.56.237.50
+nameserver 140.83.70.155
+search oracle.com 
